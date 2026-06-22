@@ -611,6 +611,72 @@
   }
   .editor-add-color:hover { background:rgba(201,168,74,0.22); }
 
+  /* EDIT MODAL — wider inner, scrolls independently */
+  .edit-modal-inner { max-width:560px; width:100%; max-height:88vh; }
+  #edit-modal .export-modal-body { max-height:calc(88vh - 60px); }
+  .editor-hint {
+    font-size:10px; color:var(--muted); line-height:1.5; margin:0 0 10px;
+    font-family:'Inter',sans-serif;
+  }
+  .editor-hint b { color:var(--gold-bright); font-weight:600; }
+
+  /* GROUPED COLOR EDITOR (Alpha / Modifier / Accent) */
+  .color-groups { display:flex; flex-direction:column; gap:10px; }
+  .color-group { background:rgba(34,31,22,0.3); border:1px solid var(--border); border-radius:7px; padding:8px 9px; }
+  .color-group-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; }
+  .color-group-title { font-size:11px; font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:1px; color:var(--gold-bright); font-weight:600; }
+  .color-group-add {
+    background:rgba(201,168,74,0.1); border:1px solid rgba(201,168,74,0.3); border-radius:4px;
+    color:var(--gold-bright); padding:3px 8px; font-size:9px; font-family:'DM Mono',monospace;
+    cursor:pointer; transition:all 0.15s;
+  }
+  .color-group-add:hover { background:rgba(201,168,74,0.2); }
+  .color-group-rows { display:flex; flex-direction:column; gap:5px; }
+  .color-group-empty { font-size:10px; color:var(--muted); font-style:italic; padding:3px 2px; }
+
+  /* Smart code field + detected-system badge */
+  .color-code-wrap { position:relative; flex:1; min-width:90px; display:flex; align-items:center; }
+  .color-code-input {
+    width:100%; background:var(--faint); border:1px solid var(--border); border-radius:4px;
+    color:var(--text); font-size:11px; font-family:'DM Mono',monospace; padding:5px 7px;
+    padding-right:52px; outline:none;
+  }
+  .color-code-input:focus { border-color:var(--accent); }
+  .code-sys-slot { position:absolute; right:5px; top:50%; transform:translateY(-50%); pointer-events:none; }
+  .code-sys-badge {
+    font-size:8px; font-family:'DM Mono',monospace; padding:2px 5px; border-radius:3px;
+    text-transform:uppercase; letter-spacing:0.5px; font-weight:600;
+  }
+  .sys-gmk { background:rgba(201,168,74,0.2); color:var(--gold-bright); border:1px solid rgba(201,168,74,0.4); }
+  .sys-ral { background:rgba(124,106,247,0.2); color:#b4a8ff; border:1px solid rgba(124,106,247,0.4); }
+  .sys-pantone { background:rgba(95,184,122,0.18); color:var(--owned); border:1px solid rgba(95,184,122,0.4); }
+  .sys-hex { background:rgba(120,160,200,0.18); color:#9ec0e0; border:1px solid rgba(120,160,200,0.4); }
+  .color-part-select {
+    flex-shrink:0; width:78px; background:var(--faint); border:1px solid var(--border); border-radius:4px;
+    color:var(--text); font-size:10px; font-family:'DM Mono',monospace; padding:5px 4px; outline:none; cursor:pointer;
+  }
+  .color-part-select:focus { border-color:var(--accent); }
+
+  /* CARD — grouped color display (Alpha/Mod/Accent → base+legend swatches) */
+  .color-groups-display { display:flex; flex-direction:column; gap:7px; }
+  .ccg-group { display:flex; align-items:flex-start; gap:8px; }
+  .ccg-type {
+    font-size:8px; font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:0.8px;
+    color:var(--gold-deep); width:54px; flex-shrink:0; padding-top:4px;
+  }
+  .ccg-swatches { display:flex; flex-wrap:wrap; gap:6px; flex:1; }
+  .ccg-swatch-wrap { display:inline-flex; align-items:center; gap:5px; background:var(--surface); border:1px solid var(--border); border-radius:5px; padding:3px 6px 3px 4px; }
+  .ccg-swatch {
+    width:16px; height:16px; border-radius:3px; flex-shrink:0; border:1px solid rgba(201,168,74,0.25);
+    background-image:linear-gradient(45deg,#444 25%,transparent 25%),linear-gradient(-45deg,#444 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#444 75%),linear-gradient(-45deg,transparent 75%,#444 75%);
+    background-size:6px 6px; background-position:0 0,0 3px,3px -3px,-3px 0;
+  }
+  .ccg-meta { display:flex; flex-direction:column; line-height:1.2; }
+  .ccg-part { font-size:7px; font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:0.5px; color:var(--muted); }
+  .ccg-code { font-size:9px; font-family:'DM Mono',monospace; color:var(--text); }
+  .ccg-sys { font-size:7px; font-family:'DM Mono',monospace; color:var(--gold-deep); text-transform:uppercase; }
+  .ccg-empty { font-size:10px; color:var(--muted); font-style:italic; }
+
   .editor-kit-list { display:flex; flex-direction:column; gap:5px; margin-bottom:10px; }
   .editor-kit-row {
     display:flex; align-items:center; gap:6px;
@@ -1105,6 +1171,19 @@
 <!-- Hidden canvas for share-image export -->
 <canvas id="share-canvas" style="display:none;"></canvas>
 
+<!-- Edit Set Modal -->
+<div class="export-modal" id="edit-modal">
+  <div class="export-modal-inner edit-modal-inner">
+    <div class="export-modal-head">
+      <h2 id="edit-modal-title">✎ Edit Set</h2>
+      <button class="export-modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="export-modal-body" id="edit-modal-body">
+      <!-- editor rendered here -->
+    </div>
+  </div>
+</div>
+
 <!-- Export Modal -->
 <div class="export-modal" id="export-modal">
   <div class="export-modal-inner">
@@ -1408,6 +1487,75 @@ const LINK_PREFIX = 'gmk_link_';
 
 // Keycap profiles (used by the per-card Profile dropdown and the Profile filter)
 const KEYCAP_PROFILES = ['Cherry','MT3','SA','KAT','DSA','DCS','OEM','XDA','(LSA)Low-Profile','MDA','Topre','MTNU','OSA','KSA'];
+
+// ─────────────────────────────────────────────
+// COLOR CODE SYSTEM — multi-format (GMK / RAL / Pantone / Hex)
+// ─────────────────────────────────────────────
+const KEY_TYPES = ['Alpha', 'Modifier', 'Accent'];
+const KEY_PARTS = ['Base', 'Legend'];
+
+// Common GMK Standard color codes → approximate hex (for swatch display).
+const GMK_CODE_MAP = {
+  'WS1':'#F3F1E9','WS2':'#E9E5D6','CP':'#C8C2B0','GBG':'#B8BCB0','N9':'#1B1B1B',
+  'N7':'#3A3A3A','N6':'#555555','N5':'#6E6E6E','N4':'#8A8A8A','BR':'#9A9186',
+  'GSR':'#7C7E7B','RE1':'#B22222','RE2':'#8C1A1A','OR1':'#E0701C','OR2':'#C85A14',
+  'YE1':'#E8C84A','YE2':'#D4A92A','GN1':'#3F8E3F','GN2':'#2C6E2C','BL1':'#2C5AA0',
+  'BL2':'#1E3F73','BL3':'#6E9AD0','PL1':'#7B4FA0','PK1':'#E58FB0','BN1':'#7B5A3A',
+  'TL1':'#1E9E96','GY1':'#9DA3A6','DP':'#C8A84A','GCC':'#D4B483','GCP':'#8B8B6B',
+  'GBP':'#6E8B5A','BCP':'#3A2F6B','BCA':'#1A2233','RCP':'#9A2230','CR':'#E8E0CC','LP':'#C4B5D8'
+};
+
+// Minimal RAL→hex for common keyboard RALs
+const RAL_HEX = {
+  '9005':'#0a0a0a','9011':'#1c1c1c','9017':'#1e1e1e','7016':'#383e42','7021':'#2f3234',
+  '7024':'#474a51','9001':'#fdf4e3','9010':'#ffffff','9016':'#f6f6f6','1015':'#e6d2b5',
+  '3020':'#cc0605','5005':'#155889','6005':'#114232','5013':'#1f3438','1023':'#f0ca00'
+};
+
+// Detect the color-code format from free text → {system, value, hex}
+function detectColorCode(raw) {
+  const s = (raw || '').trim();
+  if (!s) return { system: '', value: '', hex: '' };
+  let m = s.match(/^#?([0-9a-fA-F]{6})$/) || s.match(/^#?([0-9a-fA-F]{3})$/);
+  if (m) {
+    let h = m[1];
+    if (h.length === 3) h = h.split('').map(c => c + c).join('');
+    return { system: 'Hex', value: '#' + h.toUpperCase(), hex: '#' + h.toLowerCase() };
+  }
+  m = s.match(/^ral\s*-?\s*(\d{4})$/i);
+  if (m) return { system: 'RAL', value: 'RAL ' + m[1], hex: RAL_HEX[m[1]] || '' };
+  m = s.match(/^(?:pantone|pms|p)\s*-?\s*(\d{1,4}\s*[a-zA-Z]{0,2})$/i);
+  if (m) return { system: 'Pantone', value: 'Pantone ' + m[1].toUpperCase().trim(), hex: '' };
+  const up = s.toUpperCase();
+  if (GMK_CODE_MAP[up]) return { system: 'GMK', value: up, hex: GMK_CODE_MAP[up] };
+  if (/^[A-Z]{1,4}\d{0,2}$/.test(up)) return { system: 'GMK', value: up, hex: GMK_CODE_MAP[up] || '' };
+  return { system: '', value: s, hex: '' };
+}
+
+// Auto-map a legacy free-text "role" into {keyType, part}
+function autoMapRole(role) {
+  const r = (role || '').toLowerCase();
+  const part = /legend|sub|text|letter/.test(r) ? 'Legend' : 'Base';
+  let keyType = 'Accent';
+  if (/alpha/.test(r)) keyType = 'Alpha';
+  else if (/mod|modifier/.test(r)) keyType = 'Modifier';
+  else if (/base/.test(r)) keyType = 'Alpha';
+  else if (/legend|sub|text/.test(r)) keyType = 'Alpha';
+  return { keyType, part };
+}
+
+// Non-destructive enrichment: ensure structured fields exist
+function enrichColor(c) {
+  const out = { code: c.code || '', hex: c.hex || '', role: c.role || '' };
+  const mapped = autoMapRole(c.role);
+  out.keyType = c.keyType || mapped.keyType;
+  out.part = c.part || mapped.part;
+  if (!out.hex && out.code) {
+    const d = detectColorCode(out.code);
+    if (d.hex) out.hex = d.hex;
+  }
+  return out;
+}
 
 function saveLink(setId, url) {
   try { localStorage.setItem(`${LINK_PREFIX}${setId}`, url); } catch(e) {}
@@ -2135,19 +2283,31 @@ function buildCard(set) {
 
   cardState[set.id] = cardState[set.id] ?? 0;
 
-  const colorHtml = set.colorCodes.map(c => {
-    const code = (c.code || '').trim();
-    const role = (c.role || '').trim();
-    // Build a clean label: show both only when meaningfully different
-    let label;
-    if (code && role && code !== role && code !== '—') label = `${code} · ${role}`;
-    else label = role || (code && code !== '—' ? code : '') || c.hex;
+  // Build grouped color display: Alpha / Modifier / Accent, each with Base + Legend swatches
+  const enriched = (set.colorCodes || []).map(c => enrichColor(c));
+  const groupsHtml = KEY_TYPES.map(kt => {
+    const inType = enriched.filter(c => c.keyType === kt);
+    if (inType.length === 0) return '';
+    const swatchFor = (c) => {
+      const det = detectColorCode(c.code || c.hex || '');
+      const label = c.code ? c.code : (det.system === 'Hex' ? c.hex : (c.role || c.hex));
+      const sys = det.system ? `<span class="ccg-sys">${det.system}</span>` : '';
+      return `
+        <span class="ccg-swatch-wrap" title="${(c.code||c.hex||'')} ${c.part?('· '+c.part):''}">
+          <span class="ccg-swatch" style="background:${c.hex || 'transparent'}"></span>
+          <span class="ccg-meta"><span class="ccg-part">${c.part || ''}</span><span class="ccg-code">${label||''}</span>${sys}</span>
+        </span>`;
+    };
+    // Order base first, then legend
+    const ordered = [...inType.filter(c => (c.part||'Base')==='Base'), ...inType.filter(c => c.part==='Legend')];
     return `
-    <span class="chip" title="${c.hex}">
-      <span class="chip-swatch" style="background:${c.hex}"></span>
-      ${label}
-    </span>`;
-  }).join('');
+      <div class="ccg-group">
+        <span class="ccg-type">${kt}</span>
+        <div class="ccg-swatches">${ordered.map(swatchFor).join('')}</div>
+      </div>`;
+  }).filter(Boolean).join('');
+
+  const colorHtml = groupsHtml || '<div class="ccg-empty">No colors set yet — tap Edit to add</div>';
 
   const card = document.createElement('div');
   card.className = 'card';
@@ -2195,13 +2355,11 @@ function buildCard(set) {
       <div class="mounted-section data-box" id="mounted-${set.id}"></div>
 
       <div class="colors-section data-box">
-        <label>GMK Color Codes</label>
-        <div class="color-chips">${colorHtml}</div>
+        <label>Colors</label>
+        <div class="color-groups-display">${colorHtml}</div>
       </div>
 
       ${set.notes ? `<div style="font-size:10px;color:var(--muted);font-style:italic;border-top:1px solid var(--border);padding-top:8px;">${set.notes}</div>` : ''}
-
-      <div class="editor-panel" id="editor-${set.id}"></div>
     </div>
 
     <div class="card-footer">
@@ -2693,32 +2851,39 @@ async function updateChangelogBadge() {
 const editorState = {}; // setId -> working copy { name, designer, kits:[{name,status,imgFile}] }
 
 function toggleEditor(setId) {
-  const panel = document.getElementById(`editor-${setId}`);
-  if (!panel) return;
-  const isOpen = panel.classList.contains('open');
-  if (isOpen) {
-    panel.classList.remove('open');
-    panel.innerHTML = '';
-    delete editorState[setId];
-  } else {
-    const set = SETS.find(s => s.id === setId);
-    if (!set) return;
-    // Deep-copy working state
-    editorState[setId] = {
-      name: set.name,
-      designer: set.designer,
-      profile: set.profile || '',
-      description: loadDesc(setId),
-      kits: set.kits.map(k => ({ ...k })),
-      colorCodes: (set.colorCodes || []).map(c => ({ ...c }))
-    };
-    renderEditor(setId);
-    panel.classList.add('open');
-  }
+  // Open the edit modal for this set
+  const modal = document.getElementById('edit-modal');
+  if (!modal) return;
+  const set = SETS.find(s => s.id === setId);
+  if (!set) return;
+  // Deep-copy working state, enriching colors into the structured shape
+  editorState[setId] = {
+    name: set.name,
+    designer: set.designer,
+    profile: set.profile || '',
+    description: loadDesc(setId),
+    kits: set.kits.map(k => ({ ...k })),
+    colorCodes: (set.colorCodes || []).map(c => enrichColor(c))
+  };
+  _editingSetId = setId;
+  const title = document.getElementById('edit-modal-title');
+  if (title) title.textContent = `✎ ${set.name}`;
+  renderEditor(setId);
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+let _editingSetId = null;
+function closeEditModal() {
+  const modal = document.getElementById('edit-modal');
+  if (modal) modal.classList.remove('open');
+  document.body.style.overflow = '';
+  if (_editingSetId != null) delete editorState[_editingSetId];
+  _editingSetId = null;
 }
 
 function renderEditor(setId) {
-  const panel = document.getElementById(`editor-${setId}`);
+  const panel = document.getElementById('edit-modal-body');
   const st = editorState[setId];
   if (!panel || !st) return;
 
@@ -2738,22 +2903,20 @@ function renderEditor(setId) {
       <button class="editor-kit-del" onclick="deleteKit(${setId},${i})" title="Delete kit">✕</button>
     </div>`).join('');
 
-  const colorRows = (st.colorCodes || []).map((c, i) => {
-    const validHex = /^#[0-9a-fA-F]{6}$/.test(c.hex);
+  // Build the grouped color editor: Alpha / Modifier / Accent, each with its color rows
+  const colorGroupsHtml = KEY_TYPES.map(kt => {
+    const rowsForType = (st.colorCodes || [])
+      .map((c, i) => ({ c, i }))
+      .filter(x => (x.c.keyType || 'Accent') === kt);
+    const rowsHtml = rowsForType.map(({ c, i }) => buildColorRow(setId, c, i)).join('');
     return `
-    <div class="editor-color-row">
-      <span class="color-preview-swatch" id="swatch-${setId}-${i}" style="background:${validHex ? c.hex : 'transparent'}"></span>
-      <input class="color-hex-input" value="${(c.hex||'').replace(/"/g,'&quot;')}"
-        oninput="editColorHexText(${setId},${i},this.value)" placeholder="#b4b3c4" maxlength="9" spellcheck="false">
-      <input class="color-role-input" value="${(c.role||'').replace(/"/g,'&quot;')}"
-        oninput="editColorRole(${setId},${i},this.value)" placeholder="Role (Alphas, Mods…)">
-      <label class="color-pick-btn" title="Open color picker">
-        🎨
-        <input type="color" class="color-swatch-input" value="${validHex ? c.hex : '#888888'}"
-          oninput="editColorHex(${setId},${i},this.value)">
-      </label>
-      <button class="editor-kit-del" onclick="deleteColor(${setId},${i})" title="Remove color">✕</button>
-    </div>`;
+      <div class="color-group">
+        <div class="color-group-head">
+          <span class="color-group-title">${kt}</span>
+          <button class="color-group-add" onclick="addColorTo(${setId},'${kt}')">+ Add ${kt} color</button>
+        </div>
+        <div class="color-group-rows">${rowsHtml || `<div class="color-group-empty">No ${kt.toLowerCase()} colors yet</div>`}</div>
+      </div>`;
   }).join('');
 
   panel.innerHTML = `
@@ -2777,9 +2940,9 @@ function renderEditor(setId) {
       <textarea id="desc-input-${setId}" class="editor-desc-input" oninput="editSetDesc(${setId},this.value)" onblur="editSetDesc(${setId},this.value)" placeholder="Add a description — colorway notes, GB story, why you love it, anything…">${escapeHtml(st.description || '')}</textarea>
     </div>
     <div class="editor-field">
-      <label>Color Codes — type a hex like #b4b3c4 (preview updates live) · 🎨 picker optional</label>
-      <div class="editor-color-list" id="editcolors-${setId}">${colorRows}</div>
-      <button class="editor-add-color" onclick="addColor(${setId})">+ Add Color</button>
+      <label>Colors — grouped by key type · each can have a Base &amp; Legend color</label>
+      <p class="editor-hint">Type a code in any format — <b>GMK</b> (WS1, N9), <b>RAL</b> (RAL 9005), <b>Pantone</b> (Pantone 186 C), or <b>Hex</b> (#b4b3c4). The format is detected automatically. Use 🎨 to pick visually.</p>
+      <div class="color-groups" id="editcolors-${setId}">${colorGroupsHtml}</div>
     </div>
     <div class="editor-field">
       <label>Kits — drag ⠿ to reorder · click status to cycle</label>
@@ -2788,8 +2951,36 @@ function renderEditor(setId) {
     <div class="editor-actions">
       <button class="editor-add-kit" onclick="addKit(${setId})">+ Add Kit</button>
       <button class="editor-save" onclick="saveEditor(${setId})">✓ Save changes</button>
-      <button class="editor-cancel" onclick="toggleEditor(${setId})">Cancel</button>
+      <button class="editor-cancel" onclick="closeEditModal()">Cancel</button>
       <button class="editor-delete-set" onclick="deleteSet(${setId})" title="Delete this entire set">🗑 Delete Set</button>
+    </div>`;
+}
+
+// Build a single color row (used inside a key-type group)
+function buildColorRow(setId, c, i) {
+  const det = detectColorCode(c.code || c.hex || '');
+  const swatchHex = c.hex && /^#[0-9a-fA-F]{6}$/.test(c.hex) ? c.hex : (det.hex || 'transparent');
+  const pickerHex = /^#[0-9a-fA-F]{6}$/.test(swatchHex) ? swatchHex : '#888888';
+  const sysBadge = det.system ? `<span class="code-sys-badge sys-${det.system.toLowerCase()}">${det.system}</span>` : '';
+  return `
+    <div class="editor-color-row" data-idx="${i}">
+      <span class="color-preview-swatch" id="swatch-${setId}-${i}" style="background:${swatchHex}"></span>
+      <div class="color-code-wrap">
+        <input class="color-code-input" value="${(c.code||'').replace(/"/g,'&quot;')}"
+          oninput="editColorCode(${setId},${i},this.value)" placeholder="WS1 · RAL 9005 · #b4b3c4" spellcheck="false">
+        <span class="code-sys-slot" id="sysbadge-${setId}-${i}">${sysBadge}</span>
+      </div>
+      <select class="color-part-select" onchange="editColorPart(${setId},${i},this.value)" title="Base or legend">
+        ${KEY_PARTS.map(p => `<option value="${p}"${(c.part||'Base')===p?' selected':''}>${p}</option>`).join('')}
+      </select>
+      <input class="color-hex-input" id="hexin-${setId}-${i}" value="${(c.hex||'').replace(/"/g,'&quot;')}"
+        oninput="editColorHexText(${setId},${i},this.value)" placeholder="#hex" maxlength="9" spellcheck="false">
+      <label class="color-pick-btn" title="Open color picker">
+        🎨
+        <input type="color" class="color-swatch-input" value="${pickerHex}"
+          oninput="editColorHex(${setId},${i},this.value)">
+      </label>
+      <button class="editor-kit-del" onclick="deleteColor(${setId},${i})" title="Remove color">✕</button>
     </div>`;
 }
 
@@ -2800,37 +2991,68 @@ function editSetDesc(setId, val)     { editorState[setId].description = val; }
 
 // Color code editing
 function syncColorRow(setId, idx, val) {
-  // Update the live preview swatch
   const sw = document.getElementById(`swatch-${setId}-${idx}`);
   if (sw) sw.style.background = /^#[0-9a-fA-F]{6}$/.test(val) ? val : 'transparent';
 }
+
+// Find the DOM row for a given color index (rows live inside key-type groups)
+function findColorRowEl(setId, idx) {
+  const wrap = document.getElementById(`editcolors-${setId}`);
+  if (!wrap) return null;
+  return wrap.querySelector(`.editor-color-row[data-idx="${idx}"]`);
+}
+
+// Smart code field — detects GMK / RAL / Pantone / Hex, updates badge + swatch
+function editColorCode(setId, idx, val) {
+  const c = editorState[setId].colorCodes[idx];
+  c.code = val;
+  const det = detectColorCode(val);
+  // Update the detected-system badge
+  const slot = document.getElementById(`sysbadge-${setId}-${idx}`);
+  if (slot) {
+    slot.innerHTML = det.system
+      ? `<span class="code-sys-badge sys-${det.system.toLowerCase()}">${det.system}</span>` : '';
+  }
+  // If the code implies a hex (GMK known / RAL / direct hex) and no manual hex set yet, apply it
+  if (det.hex) {
+    if (!c.hex || c.hex === '') {
+      c.hex = det.hex;
+      const hexin = document.getElementById(`hexin-${setId}-${idx}`);
+      if (hexin) hexin.value = det.hex;
+    }
+    // Always reflect detected hex on the swatch if user hasn't typed a separate one
+    syncColorRow(setId, idx, c.hex || det.hex);
+    const row = findColorRowEl(setId, idx);
+    if (row) { const sw = row.querySelector('.color-swatch-input'); if (sw && /^#[0-9a-fA-F]{6}$/.test(c.hex || det.hex)) sw.value = (c.hex || det.hex); }
+  }
+}
+
+function editColorPart(setId, idx, val) {
+  editorState[setId].colorCodes[idx].part = val;
+}
+
 function editColorHex(setId, idx, val) {
   // from the native picker
   editorState[setId].colorCodes[idx].hex = val;
-  const list = document.getElementById(`editcolors-${setId}`);
-  if (list) {
-    const row = list.children[idx];
-    if (row) { const txt = row.querySelector('.color-hex-input'); if (txt) txt.value = val; }
-  }
+  const row = findColorRowEl(setId, idx);
+  if (row) { const txt = row.querySelector('.color-hex-input'); if (txt) txt.value = val; }
   syncColorRow(setId, idx, val);
 }
 function editColorHexText(setId, idx, val) {
-  // from the text field — primary input
+  // from the hex text field
   editorState[setId].colorCodes[idx].hex = val;
   syncColorRow(setId, idx, val);
   if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-    const list = document.getElementById(`editcolors-${setId}`);
-    if (list) {
-      const row = list.children[idx];
-      if (row) { const sw = row.querySelector('.color-swatch-input'); if (sw) sw.value = val; }
-    }
+    const row = findColorRowEl(setId, idx);
+    if (row) { const sw = row.querySelector('.color-swatch-input'); if (sw) sw.value = val; }
   }
 }
 function editColorRole(setId, idx, val) {
   editorState[setId].colorCodes[idx].role = val;
 }
-function addColor(setId) {
-  editorState[setId].colorCodes.push({ code: '', hex: '', role: '' });
+// Add a color pre-tagged to a key type (Alpha/Modifier/Accent), default Base
+function addColorTo(setId, keyType) {
+  editorState[setId].colorCodes.push({ code: '', hex: '', role: '', keyType, part: 'Base' });
   renderEditor(setId);
 }
 function deleteColor(setId, idx) {
@@ -2911,7 +3133,7 @@ async function saveEditor(setId) {
   // any missed oninput events (paste, IME, autofill, etc.). Read by ID first,
   // then fall back to the descendant selector.
   const descEl = document.getElementById(`desc-input-${setId}`)
-              || document.querySelector(`#editor-${setId} .editor-desc-input`);
+              || document.querySelector(`#edit-modal-body .editor-desc-input`);
   if (descEl) st.description = descEl.value;
   const oldDesc = loadDesc(setId);
   const newDesc = (st.description || '').trim();
@@ -2944,19 +3166,25 @@ async function saveEditor(setId) {
   // Commit kits
   set.kits = newKits;
 
-  // Commit color codes — keep only rows with a hex or role.
-  // 'code' stays blank unless it's a real GMK code distinct from the role,
-  // so the card chip never shows the label twice.
+  // Commit color codes — keep rows that have a code, hex, or role.
+  // Persist the structured keyType/part fields alongside the legacy shape.
   if (Array.isArray(st.colorCodes)) {
     const cleaned = st.colorCodes
-      .filter(c => (c.hex && c.hex.trim()) || (c.role && c.role.trim()))
+      .filter(c => (c.code && c.code.trim()) || (c.hex && c.hex.trim()) || (c.role && c.role.trim()))
       .map(c => {
         const code = (c.code || '').trim();
         const role = (c.role || '').trim();
+        const det = detectColorCode(code);
+        // Derive hex from a known code if the user didn't set one explicitly
+        let hex = (c.hex || '').trim();
+        if (!hex && det.hex) hex = det.hex;
+        if (!hex) hex = '#888888';
         return {
-          code: (code && code !== role && code !== '—') ? code : '',
-          hex: (c.hex || '#888888').trim(),
-          role: role
+          code: code,
+          hex: hex,
+          role: role,
+          keyType: c.keyType || autoMapRole(role).keyType,
+          part: c.part || autoMapRole(role).part
         };
       });
     const colorsChanged = JSON.stringify(set.colorCodes) !== JSON.stringify(cleaned);
@@ -2970,7 +3198,8 @@ async function saveEditor(setId) {
   await persistAll();
   cardState[setId] = 0;
 
-  // Close editor and rebuild this card in place
+  // Close the modal and rebuild this card in place
+  closeEditModal();
   delete editorState[setId];
   renderGrid();
   updateChangelogBadge();
